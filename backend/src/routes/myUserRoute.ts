@@ -1,10 +1,11 @@
 import express, { Request, Response } from "express";
 
 import myUserController from "../controllers/myUserController";
+import { jwtCheck } from "../middleware/auth";
 
 const router = express.Router();
 
 // /api/my/user
-router.post("/", myUserController.createCurrentUser);
+router.post("/", jwtCheck, myUserController.createCurrentUser);
 
 export default router;
