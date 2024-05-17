@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import {
   Form,
@@ -9,6 +10,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/LoadingButton";
@@ -17,7 +19,7 @@ import { Button } from "@/components/ui/button";
 const formSchema = z.object({
   // make email optional because it's read-only so user cannot edit
   email: z.string().optional(),
-  name: z.string().min(1, "name is required"),
+  name: z.string().min(1, "Name is required"),
   addressLine1: z.string().min(1, "One line of Address is required"),
   city: z.string().min(1, "City is required"),
   country: z.string().min(1, "Country is required"),
@@ -31,6 +33,8 @@ type Props = {
 };
 
 const UserProfileForm = ({ onSave, isLoading }: Props) => {
+  const { user } = useAuth0();
+
   const form = useForm<UserFormData>({
     resolver: zodResolver(formSchema),
   });
@@ -54,7 +58,12 @@ const UserProfileForm = ({ onSave, isLoading }: Props) => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input {...field} disabled className="bg-white" />
+                <Input
+                  {...field}
+                  disabled
+                  placeholder={user?.email}
+                  className="bg-white"
+                />
               </FormControl>
             </FormItem>
           )}
@@ -68,6 +77,7 @@ const UserProfileForm = ({ onSave, isLoading }: Props) => {
               <FormControl>
                 <Input {...field} className="bg-white" />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -76,11 +86,12 @@ const UserProfileForm = ({ onSave, isLoading }: Props) => {
             control={form.control}
             name="addressLine1"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Address</FormLabel>
                 <FormControl>
                   <Input {...field} className="bg-white" />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -88,11 +99,12 @@ const UserProfileForm = ({ onSave, isLoading }: Props) => {
             control={form.control}
             name="city"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>City</FormLabel>
                 <FormControl>
                   <Input {...field} className="bg-white" />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -100,11 +112,12 @@ const UserProfileForm = ({ onSave, isLoading }: Props) => {
             control={form.control}
             name="country"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex-1">
                 <FormLabel>Country</FormLabel>
                 <FormControl>
                   <Input {...field} className="bg-white" />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -112,7 +125,9 @@ const UserProfileForm = ({ onSave, isLoading }: Props) => {
         {isLoading ? (
           <LoadingButton />
         ) : (
-          <Button type="submit bg-orange-500">Submit</Button>
+          <Button className="submit bg-orange-500 w-full md:w-fit">
+            Submit
+          </Button>
         )}
       </form>
     </Form>
