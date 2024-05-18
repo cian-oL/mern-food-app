@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useAuth0 } from "@auth0/auth0-react";
 
 import {
   Form,
@@ -15,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
+import { User } from "@/types/types";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   // make email optional because it's read-only so user cannot edit
@@ -30,14 +31,18 @@ type UserFormData = z.infer<typeof formSchema>;
 type Props = {
   onSave: (userProfileData: UserFormData) => void;
   isLoading: boolean;
+  currentUser: User;
 };
 
-const UserProfileForm = ({ onSave, isLoading }: Props) => {
-  const { user } = useAuth0();
-
+const UserProfileForm = ({ onSave, isLoading, currentUser }: Props) => {
   const form = useForm<UserFormData>({
     resolver: zodResolver(formSchema),
+    defaultValues: currentUser,
   });
+
+  useEffect(() => {
+    form.reset(currentUser);
+  }, [currentUser, form]);
 
   return (
     <Form {...form}>
@@ -58,12 +63,7 @@ const UserProfileForm = ({ onSave, isLoading }: Props) => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  disabled
-                  placeholder={user?.email}
-                  className="bg-white"
-                />
+                <Input {...field} disabled className="bg-white" />
               </FormControl>
             </FormItem>
           )}
