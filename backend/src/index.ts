@@ -15,6 +15,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+// health endpoint -- extra sanity checck to confirm we can access our endpoints
+app.use("/health", async (req: Request, res: Response) => {
+  res.send({ message: "health OK" });
+});
+
+// user endpoints
 app.use("/api/my/user", myUserRoute);
 
 app.listen(PORT, () => {
