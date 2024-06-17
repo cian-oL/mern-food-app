@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 
 import myUserRoute from "./routes/myUserRoute";
+import myRestaurantRoute from "./routes/myRestaurantRoute";
 
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING as string)
@@ -30,6 +31,7 @@ app.use("/health", async (req: Request, res: Response) => {
 
 // user endpoints
 app.use("/api/my/user", myUserRoute);
+app.use("/api/my/restaurant", myRestaurantRoute);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
