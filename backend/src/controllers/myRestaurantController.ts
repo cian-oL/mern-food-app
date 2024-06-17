@@ -4,6 +4,20 @@ import mongoose from "mongoose";
 
 import Restaurant from "../models/restaurant";
 
+const getMyRestaurant = async (req: Request, res: Response) => {
+  try {
+    const currentRestaurant = await Restaurant.findOne({ user: req.userId });
+
+    if (!currentRestaurant) {
+      return res.status(404).json({ message: "No restaurant found" });
+    }
+    res.status(200).json(currentRestaurant.toObject());
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const createMyRestaurant = async (req: Request, res: Response) => {
   try {
     const existingRestaurant = await Restaurant.findOne({
@@ -35,4 +49,4 @@ const createMyRestaurant = async (req: Request, res: Response) => {
   }
 };
 
-export default { createMyRestaurant };
+export default { getMyRestaurant, createMyRestaurant };
