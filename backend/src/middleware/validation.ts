@@ -35,7 +35,7 @@ export const validateMyUserRequest = [
 ];
 
 export const validateMyRestaurantRequest = [
-  body("resturantName")
+  body("restaurantName")
     .isString()
     .notEmpty()
     .withMessage("Name must be a string"),
@@ -59,7 +59,6 @@ export const validateMyRestaurantRequest = [
     .withMessage("Cuisines must be an array and not empty"),
   body("menuItems")
     .isArray()
-    .notEmpty()
     .withMessage("Menu Items must be an array and not empty"),
   body("menuItems.*.name")
     .isString()
