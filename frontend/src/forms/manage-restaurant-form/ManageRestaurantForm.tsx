@@ -14,27 +14,34 @@ import MenuItemsSection from "./MenuItemsSection";
 import ImageSection from "./ImageSection";
 import { Restaurant } from "@/types/types";
 
-const formSchema = z.object({
-  restaurantName: z.string().min(1, "Name is required"),
-  city: z.string().min(1, "City is required"),
-  country: z.string().min(1, "Country is required"),
-  deliveryPrice: z.coerce.number({
-    required_error: "Delivery Price is required",
-    invalid_type_error: "Must be a valid number",
-  }),
-  estimatedDeliveryTime: z.coerce.number({
-    required_error: "Estimated Delivery Time is required",
-    invalid_type_error: "Must be a valid number",
-  }),
-  cuisines: z.array(z.string()).nonempty("Please select at least one item"),
-  menuItems: z.array(
-    z.object({
-      name: z.string().min(1, "Required"),
-      price: z.coerce.number().min(1, "Required"),
-    })
-  ),
-  imageFile: z.instanceof(File, { message: "Required" }),
-});
+const formSchema = z
+  .object({
+    restaurantName: z.string().min(1, "Name is required"),
+    city: z.string().min(1, "City is required"),
+    country: z.string().min(1, "Country is required"),
+    deliveryPrice: z.coerce.number({
+      required_error: "Delivery Price is required",
+      invalid_type_error: "Must be a valid number",
+    }),
+    estimatedDeliveryTime: z.coerce.number({
+      required_error: "Estimated Delivery Time is required",
+      invalid_type_error: "Must be a valid number",
+    }),
+    cuisines: z.array(z.string()).nonempty("Please select at least one item"),
+    menuItems: z.array(
+      z.object({
+        name: z.string().min(1, "Required"),
+        price: z.coerce.number().min(1, "Required"),
+      })
+    ),
+    // in update scenario, need to make both optional as they are interdepenedent
+    imageUrl: z.string().optional(),
+    imageFile: z.instanceof(File, { message: "Required" }).optional(),
+  })
+  .refine((schemaData) => schemaData.imageUrl || schemaData.imageFile, {
+    message: "Either image URL or image File must be provided",
+    path: ["imageFile"],
+  });
 
 type RestaurantFormData = z.infer<typeof formSchema>;
 
@@ -94,7 +101,6 @@ const ManageRestaurantForm = ({
       "estimatedDeliveryTime",
       formDataJson.estimatedDeliveryTime.toString()
     );
-    formData.append("imageFile", formDataJson.imageFile);
 
     formDataJson.cuisines.forEach((cuisine, index) => {
       formData.append(`cuisines[${index}]`, cuisine);
@@ -107,6 +113,10 @@ const ManageRestaurantForm = ({
         (menuItem.price * 100).toString()
       );
     });
+
+    if (formDataJson.imageFile) {
+      formData.append("imageFile", formDataJson.imageFile);
+    }
 
     onSave(formData);
   };
