@@ -1,5 +1,7 @@
 import { useFormContext } from "react-hook-form";
 
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+
 import {
   FormControl,
   FormDescription,
@@ -10,7 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 
 const ImageSection = () => {
-  const { control } = useFormContext();
+  const { control, watch } = useFormContext();
+
+  const existingImageUrl = watch("imageUrl");
 
   return (
     <div className="space-y-2">
@@ -21,7 +25,15 @@ const ImageSection = () => {
           results. Only one image allowed
         </FormDescription>
       </div>
-      <div className="flex flex-col gap-8 w-[50%]">
+      <div className="flex flex-col gap-8 md:w-[50%]">
+        {existingImageUrl && (
+          <AspectRatio ratio={16 / 9}>
+            <img
+              src={existingImageUrl}
+              className="rounded-md object-cover w-full h-full"
+            />
+          </AspectRatio>
+        )}
         <FormField
           control={control}
           name="imageFile"
