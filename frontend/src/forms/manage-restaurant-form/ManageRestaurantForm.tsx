@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useEffect } from "react";
 
 import { Form, FormDescription } from "@/components/ui/form";
 import LoadingButton from "@/components/LoadingButton";
@@ -11,6 +12,7 @@ import DetailsSection from "./DetailsSection";
 import CuisinesSection from "./CuisinesSection";
 import MenuItemsSection from "./MenuItemsSection";
 import ImageSection from "./ImageSection";
+import { Restaurant } from "@/types/types";
 
 const formSchema = z.object({
   restaurantName: z.string().min(1, "Name is required"),
@@ -37,11 +39,16 @@ const formSchema = z.object({
 type RestaurantFormData = z.infer<typeof formSchema>;
 
 type Props = {
+  currentRestaurant?: Restaurant;
   onSave: (restaurantFormData: FormData) => void;
   isLoading: boolean;
 };
 
-const ManageRestaurantForm = ({ onSave, isLoading }: Props) => {
+const ManageRestaurantForm = ({
+  currentRestaurant,
+  onSave,
+  isLoading,
+}: Props) => {
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,6 +56,30 @@ const ManageRestaurantForm = ({ onSave, isLoading }: Props) => {
       menuItems: [{ name: "", price: 0 }],
     },
   });
+
+  useEffect(() => {
+    if (!currentRestaurant) {
+      return;
+    }
+
+    // convert back the prices
+    const deliveryPriceFormatted = parseInt(
+      (currentRestaurant.deliveryPrice / 100).toFixed(2)
+    );
+
+    const menuItemsFormatted = currentRestaurant.menuItems.map((menuItem) => ({
+      ...menuItem,
+      price: parseInt((menuItem.price / 100).toFixed(2)),
+    }));
+
+    const updatedRestaurant = {
+      ...currentRestaurant,
+      deliveryPrice: deliveryPriceFormatted,
+      menuItems: menuItemsFormatted,
+    };
+
+    form.reset(updatedRestaurant);
+  }, [form, currentRestaurant]);
 
   const onSubmit = (formDataJson: RestaurantFormData) => {
     const formData = new FormData();
