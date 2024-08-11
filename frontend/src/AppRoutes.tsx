@@ -6,6 +6,7 @@ import AuthCallbackPage from "./pages/AuthCallbackPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import ManageRestaurantPage from "./pages/ManageRestaurantPage";
+import SearchPage from "./pages/SearchPage";
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,14 @@ const AppRoutes = () => {
         element={
           <Layout showHero>
             <HomePage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/search/:city"
+        element={
+          <Layout>
+            <SearchPage />
           </Layout>
         }
       />
