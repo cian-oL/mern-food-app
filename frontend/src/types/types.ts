@@ -13,6 +13,7 @@ export type User = {
 export type Restaurant = {
   _id: string;
   user: string;
+  restaurantName: string;
   city: string;
   country: string;
   deliveryPrice: number;
@@ -26,4 +27,13 @@ export type Restaurant = {
 export type MenuItem = {
   name: string;
   price: number;
+};
+
+export type RestaurantSearchResponse = {
+  data: Restaurant[];
+  pagination: {
+    total: number;
+    page: number;
+    pages: number;
+  };
 };
